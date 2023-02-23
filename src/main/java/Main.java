@@ -24,12 +24,21 @@ public class Main{
                 }
                 writer.write( text );
                 ExprTokenizer test = new ExprTokenizer( text );
-                int n = 418;
-                for( int i = 1; i <= n ; i++ ){
-                    System.out.println(test.consume());
-                }
+                Player p = new Player();
+                ExprParser pa = new ExprParser( p,test );
+                pa.parse();
+//                int n = 418;
+//                for( int i = 1; i <= n ; i++ ){
+//                    System.out.println(test.consume());
+//                }
             }catch( IOException e ){
                 System.err.format("IOE: %s%n",e);
+            }catch( LexicalError e ){
+                throw new RuntimeException( e );
+            }catch( SyntaxError e ){
+                throw new RuntimeException( e );
+            }catch( EvalError e ){
+                throw new RuntimeException( e );
             }
         } catch (IOException x) {
             System.err.format("IOException: %s%n", x);
