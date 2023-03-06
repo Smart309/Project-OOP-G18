@@ -1,7 +1,9 @@
 import java.util.Map;
 
 public class Identifier implements Expr{
+    private String consume;
     public Identifier( String consume ){
+        this.consume = consume;
     }
 
     @Override

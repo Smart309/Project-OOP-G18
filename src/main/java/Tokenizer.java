@@ -16,12 +16,12 @@ public interface Tokenizer{
      *  and returns it.
      *  effects: removes the next token
      *           from the input stream */
-    String consume();
+    String consume() throws LexicalError;
 
     /** Consumes the next token if it is s.
      * Throws SyntaxError otherwise.
      * effects: removes the next token
      * from input stream if it is s
      */
-    void consume(String s) throws SyntaxError;
+    void consume(String s) throws SyntaxError, LexicalError;
 }

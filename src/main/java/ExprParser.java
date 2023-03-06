@@ -2,9 +2,11 @@ import java.util.LinkedList;
 
 public class ExprParser implements Parser{
     private Tokenizer tkz;
-    public ExprParser(Tokenizer tkz){
+    public ExprParser( Tokenizer tkz){
         this.tkz = tkz;
     }
+
+
     public static boolean isIdentifier(String s){
         //Check that the string is not a reserved word
         switch (s)
@@ -55,7 +57,7 @@ public class ExprParser implements Parser{
         }
     }
 
-    public Node parse() throws SyntaxError,LexicalError,EvalError{
+    public Node parse() throws SyntaxError, LexicalError, EvalError{
         Node n = parsePlan();
         if( tkz.hasNextToken() ){
             throw new SyntaxError( "leftover token" );
@@ -63,7 +65,7 @@ public class ExprParser implements Parser{
         return n;
     }
     //Plan -> Statement+
-    private Node parsePlan() throws SyntaxError,LexicalError,EvalError{
+    private Node parsePlan() throws SyntaxError, LexicalError,EvalError{
         if( !tkz.hasNextToken() ){
             throw new SyntaxError( "You must have a construction plan!" );
         }
@@ -83,7 +85,7 @@ public class ExprParser implements Parser{
     }
 
     // Statement -> Command | BlockStatement | IfStatement | WhileStatement
-    private Node parseStatement() throws SyntaxError,LexicalError,EvalError{
+    private Node parseStatement() throws SyntaxError, LexicalError,EvalError{
         if(tkz.peek("{")){
             return parseBlockStatement();
         }else if( tkz.peek("if") ){
@@ -96,7 +98,7 @@ public class ExprParser implements Parser{
     }
 
     // Command -> AssignmentStatement | ActionCommand
-    private Node parseCommand() throws SyntaxError,LexicalError{
+    private Node parseCommand() throws SyntaxError, LexicalError{
         if( isIdentifier( tkz.peek() ) ){
             return parseAssignmentStatement();
         }else{
@@ -105,7 +107,7 @@ public class ExprParser implements Parser{
     }
 
     // ActionCommand -> done | relocate | MoveCommand | RegionCommand | AttackCommand
-    private Node parseActionCommand()throws SyntaxError,LexicalError{
+    private Node parseActionCommand()throws SyntaxError, LexicalError{
         if(tkz.peek("done")){
             tkz.consume();
             return new Done();
@@ -126,12 +128,12 @@ public class ExprParser implements Parser{
     }
 
     // AttackCommand -> shoot Direction Expression
-    private Node parseAttack() throws LexicalError,SyntaxError{
+    private Node parseAttack() throws LexicalError, SyntaxError{
         return new Attack(parseDirection(),parseExpression());
     }
 
     // RegionCommand -> invest Expression | collect Expression
-    private Node parseRegion() throws LexicalError,SyntaxError{
+    private Node parseRegion() throws LexicalError, SyntaxError{
         return new RegionCommand(tkz.consume(),parseExpression());
     }
 
@@ -155,7 +157,7 @@ public class ExprParser implements Parser{
     }
 
     // AssignmentStatement -> <identifier> = Expression
-    private Node parseAssignmentStatement()throws SyntaxError,LexicalError{
+    private Node parseAssignmentStatement()throws SyntaxError, LexicalError{
         String var = tkz.consume();
         if(isSpecialVar( var )){
             return new Identifier( var );
@@ -166,7 +168,7 @@ public class ExprParser implements Parser{
     }
 
     // Expression -> Expression + Term | Expression - Term | Term
-    private Expr parseExpression()throws SyntaxError,LexicalError{
+    private Expr parseExpression()throws SyntaxError, LexicalError{
         Expr e = parseTerm();
         while( tkz.hasNextToken()&&(tkz.peek("+")||tkz.peek("-")) ){
             e = new BinaryArithExpr(e,tkz.consume(),parseTerm());
@@ -175,7 +177,7 @@ public class ExprParser implements Parser{
     }
 
     // Term -> Term * Factor | Term / Factor | Term % Factor | Factor
-    private Expr parseTerm()throws SyntaxError,LexicalError{
+    private Expr parseTerm()throws SyntaxError, LexicalError{
         Expr e = parseFactor();
         while( tkz.hasNextToken()&&(tkz.peek("*")||tkz.peek("/")||tkz.peek("%")) ){
             if(tkz.peek("*")){
@@ -193,7 +195,7 @@ public class ExprParser implements Parser{
     }
 
     // Factor -> Power ^ Factor | Power
-    private Expr parseFactor()throws SyntaxError,LexicalError{
+    private Expr parseFactor()throws SyntaxError, LexicalError{
         Expr e = parsePower();
         while( tkz.peek("^") ){
             tkz.consume();
@@ -204,7 +206,7 @@ public class ExprParser implements Parser{
 
     // Power -> <number> | <identifier> | ( Expression ) | InfoExpression
     // InfoExpression -> opponent | nearby Direction
-    private Expr parsePower()throws SyntaxError,LexicalError{
+    private Expr parsePower()throws SyntaxError, LexicalError{
         if (tkz.peek().matches(".*[0-9].*"))
         {
             return new IntLit(Long.parseLong(tkz.consume()));
@@ -235,7 +237,7 @@ public class ExprParser implements Parser{
     }
 
     // BlockStatement -> { Statement* }
-    private Node parseBlockStatement()throws SyntaxError,LexicalError,EvalError{
+    private Node parseBlockStatement()throws SyntaxError, LexicalError,EvalError{
         LinkedList <Node> statement = new LinkedList<>();
         tkz.consume("{");
         while( !tkz.peek("}") ){
@@ -246,7 +248,7 @@ public class ExprParser implements Parser{
     }
 
     // IfStatement -> if ( Expression ) then Statement else Statement
-    private Node parseIfStatement()throws SyntaxError,LexicalError,EvalError{
+    private Node parseIfStatement()throws SyntaxError, LexicalError,EvalError{
         tkz.consume("if");
         tkz.consume("(");
         Node expression = parseExpression();
@@ -260,7 +262,7 @@ public class ExprParser implements Parser{
     }
 
     // WhileStatement -> while ( Expression ) Statement
-    private Node parseWhileStatement()throws SyntaxError,LexicalError,EvalError{
+    private Node parseWhileStatement()throws SyntaxError, LexicalError,EvalError{
         tkz.consume("while");
         tkz.consume("(");
         Node expression = parseExpression();

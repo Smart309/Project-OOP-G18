@@ -2,6 +2,7 @@ import java.util.Map;
 
 public class InfoExpr implements Expr{
     public InfoExpr(String consume, Object o ){
+
     }
 
     @Override
